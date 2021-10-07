@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:game/flappyBird/bird.dart';
 import 'package:game/flappyBird/homepage.dart';
-import 'package:game/store.dart';
+import 'package:game/flappyBird/store.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 typedef StateValue = bool Function(bool);

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:game/flappyBird/barriers.dart';
 import 'package:game/flappyBird/bird.dart';
-import 'package:game/store.dart';
+import 'package:game/flappyBird/store.dart';
 import 'package:hive/hive.dart';
 
 class HomePage extends StatefulWidget {

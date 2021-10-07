@@ -20,15 +20,26 @@ class _StorePageState extends State<StorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue[100],
       appBar: AppBar(
+        backgroundColor: Colors.blue[100],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.indigo[800],
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
           children: [
-            Icon(Icons.money_rounded),
-            Text(": ${money} "),
+            Icon(
+              Icons.money_rounded,
+              color: Colors.indigo[800],
+            ),
+            Text(
+              ": ${money} ",
+              style: TextStyle(color: Colors.indigo[800]),
+            ),
           ],
         ),
       ),

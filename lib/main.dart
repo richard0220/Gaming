@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:game/flappyBird/homepage.dart';
+import 'package:game/flappyBird/splashScreen.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: SplashScreen(),
     );
   }
 }
