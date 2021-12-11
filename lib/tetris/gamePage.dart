@@ -11,12 +11,15 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
+  int point = 0;
   int checkBlockCounter = 0;
   Random random = Random();
   int index = 0;
   Color colorPaint = Colors.white;
   bool rightMax = false;
   bool leftMax = false;
+  int rotateCount = 0;
+  int axis = 0;
   List<List<int>> blocks = [
     [4, 5, 14, 15],
     [4, 14, 15, 25],
@@ -81,7 +84,13 @@ class _GamePageState extends State<GamePage> {
             existBlock.add(movingBlock[i]);
           }
           existBlock.sort();
+          print(existBlock);
           movingBlock = [];
+          rotateCount = 0;
+          if (existBlock[0] ~/ 10 == 0) {
+            timer.cancel();
+            gameover();
+          }
         }
         // check
         if (existBlock.length > 9) {
@@ -99,22 +108,58 @@ class _GamePageState extends State<GamePage> {
     });
   }
 
+  void gameover() {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Game Over',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        content: Text('Score: ${point}'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.arrow_forward),
+            onPressed: () {
+              Navigator.pop(context);
+              resetGame;
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void resetGame() {
+    for (int i = 0; i < existColor.length; i++) {
+      existColor[i] = Colors.grey[800]!;
+    }
+    existBlock = [];
+    movingBlock = [];
+    point = 0;
+    startGame();
+  }
+
   void clearLine(int lineIndex) {
     // clear the line
     for (int i = 0; i < 10; i++) {
       existBlock.remove(lineIndex * 10 + i);
       existColor[lineIndex * 10 + i] = Colors.grey[800]!;
     }
-    // down the blocks
+    // set down the blocks
     int blockAbove = 0;
-    for (int i = 0; existBlock[i] < lineIndex * 10; i++) {
-      blockAbove += 1;
+    for (int i = 0; i < existBlock.length; i++) {
+      if (existBlock[i] < lineIndex * 10) {
+        blockAbove += 1;
+      }
     }
-    for (int i = blockAbove; i > 0; i--) {
+    for (int i = blockAbove - 1; i >= 0; i--) {
+      print('${existBlock[i]}');
       existColor[existBlock[i] + 10] = existColor[existBlock[i]];
       existColor[existBlock[i]] = Colors.grey[800]!;
       existBlock[i] += 10;
     }
+    point += 30;
   }
 
   void rightShift() {
@@ -161,7 +206,129 @@ class _GamePageState extends State<GamePage> {
     }
   }
 
-  void rotate() {}
+  void rotate() {
+    Color temp = existColor[movingBlock[0]];
+    axis = movingBlock[0];
+    for (int i = 0; i < 4; i++) {
+      existColor[movingBlock[i]] = Colors.grey[800]!;
+    }
+    if (rotateCount == 0) {
+      if (temp == Colors.pink[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 11, axis + 12, axis + 20, axis + 21]);
+      } else if (temp == Colors.teal[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 9, axis + 10, axis + 20, axis + 21]);
+      } else if (temp == Colors.amber[100]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 9, axis + 10, axis + 11, axis + 20]);
+      } else if (temp == Colors.blueGrey) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis, axis + 9, axis + 10, axis + 11]);
+      } else if (temp == Colors.deepPurple[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 9, axis + 1, axis + 11, axis + 21]);
+      } else if (temp == Colors.indigo) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 9, axis + 10, axis + 11, axis + 12]);
+      } else if (temp == Colors.lightBlue) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 9, axis + 10, axis + 11, axis + 19]);
+      } else if (temp == Colors.red) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 1, axis + 9, axis + 10, axis + 11]);
+      }
+    } else if (rotateCount == 1) {
+      if (temp == Colors.pink[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 10, axis, axis + 1, axis + 11]);
+      } else if (temp == Colors.teal[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 9, axis, axis + 1, axis + 10]);
+      } else if (temp == Colors.amber[100]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 9, axis, axis + 1, axis + 11]);
+      } else if (temp == Colors.blueGrey) {
+        movingBlock.removeRange(0, 4);
+        movingBlock
+            .addAll([axis, axis + 10, axis + 11, axis + 20]); // stop here
+      } else if (temp == Colors.deepPurple[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 9, axis + 10, axis + 11, axis + 12]);
+      } else if (temp == Colors.indigo) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 9, axis + 1, axis + 11, axis + 21]);
+      } else if (temp == Colors.lightBlue) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 10, axis - 9, axis + 1, axis + 11]);
+      } else if (temp == Colors.red) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 1, axis + 2, axis + 11, axis + 21]);
+      }
+    } else if (rotateCount == 2) {
+      if (temp == Colors.pink[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 11, axis + 12, axis + 20, axis + 21]);
+      } else if (temp == Colors.teal[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 9, axis + 10, axis + 20, axis + 21]);
+      } else if (temp == Colors.amber[100]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis, axis + 9, axis + 10, axis + 11]);
+      } else if (temp == Colors.blueGrey) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 9, axis + 10, axis + 11, axis + 20]);
+      } else if (temp == Colors.deepPurple[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 9, axis + 1, axis + 11, axis + 21]);
+      } else if (temp == Colors.indigo) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 9, axis + 10, axis + 11, axis + 12]);
+      } else if (temp == Colors.lightBlue) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 2, axis + 10, axis + 11, axis + 12]);
+      } else if (temp == Colors.red) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 9, axis + 10, axis + 11, axis + 21]);
+      }
+    } else if (rotateCount == 3) {
+      if (temp == Colors.pink[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 10, axis, axis + 1, axis + 11]);
+      } else if (temp == Colors.teal[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 9, axis, axis + 1, axis + 10]);
+      } else if (temp == Colors.amber[100]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis, axis + 10, axis + 11, axis + 20]);
+      } else if (temp == Colors.blueGrey) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 9, axis, axis + 1, axis + 11]); // stop here
+      } else if (temp == Colors.deepPurple[200]) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis + 9, axis + 10, axis + 11, axis + 12]);
+      } else if (temp == Colors.indigo) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 9, axis + 1, axis + 11, axis + 21]);
+      } else if (temp == Colors.lightBlue) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 1, axis + 9, axis + 19, axis + 20]);
+      } else if (temp == Colors.red) {
+        movingBlock.removeRange(0, 4);
+        movingBlock.addAll([axis - 9, axis + 1, axis + 10, axis + 11]);
+      }
+    }
+    if (rotateCount == 3) {
+      rotateCount = 0;
+    } else {
+      rotateCount += 1;
+    }
+    for (int i = 0; i < 4; i++) {
+      existColor[movingBlock[i]] = temp;
+    }
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +348,10 @@ class _GamePageState extends State<GamePage> {
               },
             ),
           ),
+          Text(
+            "Point: ${point}",
+            style: TextStyle(color: Colors.white),
+          ),
           Container(
             padding: EdgeInsets.all(5),
             height: 120,
@@ -190,8 +361,8 @@ class _GamePageState extends State<GamePage> {
                 GestureDetector(
                   onTap: startGame,
                   child: Container(
-                    height: 90,
-                    width: 90,
+                    height: 80,
+                    width: 80,
                     color: Colors.grey[800],
                     alignment: Alignment.center,
                     child: Text(
@@ -203,8 +374,8 @@ class _GamePageState extends State<GamePage> {
                 GestureDetector(
                   onTap: leftShift,
                   child: Container(
-                    height: 90,
-                    width: 90,
+                    height: 80,
+                    width: 80,
                     color: Colors.grey[800],
                     alignment: Alignment.center,
                     child: Icon(
@@ -216,8 +387,8 @@ class _GamePageState extends State<GamePage> {
                 GestureDetector(
                   onTap: rightShift,
                   child: Container(
-                    height: 90,
-                    width: 90,
+                    height: 80,
+                    width: 80,
                     color: Colors.grey[800],
                     alignment: Alignment.center,
                     child: Icon(
@@ -229,8 +400,8 @@ class _GamePageState extends State<GamePage> {
                 GestureDetector(
                   onTap: rotate,
                   child: Container(
-                    height: 90,
-                    width: 90,
+                    height: 80,
+                    width: 80,
                     color: Colors.grey[800],
                     alignment: Alignment.center,
                     child: Icon(
